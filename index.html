@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+  <title>Antenna Pattern</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126752612-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-126752612-1'); -->
+  </script>
+
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+  <!-- Popper.js -->
+  <script src="https://unpkg.com/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="css/fontawesome-free-5.11.2-web/css/all.min.css">
+  <!-- <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"> -->
+
+  <!-- Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.min.js" integrity="sha256-D/MkugLuxx4Xx0Kb92cUhpxlCMhUvQ0eOtEL8Ol23jM=" crossorigin="anonymous"></script>
+  <!-- Custom -->
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/hline.css">
+  <link rel="stylesheet" href="css/footer.css">
+
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  <style>
+    .meta__avatar {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;
+      border-radius: 5%;
+      max-width: 100%;
+    }
+
+    #theSidebar,
+    #theGrid,
+    .meta.meta--full {
+      top: 62px;
+      z-index: 99;
+    }
+
+    .modal-dialog {
+      height: 95%;
+      max-width: 95%;
+    }
+
+    .modal-dialog .modal-content {
+      height: 100%;
+    }
+
+    .modal-body {
+      max-height: calc(100% - 60px);
+      /*overflow-y: scroll;*/
+    }
+
+    .content.content--show {
+      height: 90vh;
+    }
+
+    .ui.grid {
+      margin-top: 4rem !important;
+    }
+
+    .input-group-prepend>.input-group-text {
+      width: 110px;
+    }
+
+    .input-group-append>.input-group-text {
+      width: 50px;
+    }
+  </style>
+</head>
+
+<body class="bg-white">
+  <!-- Navbar -->
+  <nav class="navbar navbar-inverse navbar-expand-sm" style="background-color: #212529;">
+    <div class="navbar-brand">Antenna Pattern</div>
+  </nav>
+
+  <h1 style="display: none;">Antenna Pattern</h1>
+
+
+  <!-- Container -->
+  <div class="container-sm mt-3">
+    <div class="row mb-3">
+      <div class="col-lg-4 mb-3 text-center">
+        <select class="custom-select mb-5" style="width: 240px;">
+          <option value=0 selected>ITU-R S.580-6</option>
+          <option value=1>One</option>
+        </select>
+
+        <div class="input-group mb-3 justify-content-center">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Frequency</span>
+          </div>
+          <input id="frequency" class="px-1" style="width:80px;" type="number" value=11.5 min=2.0 max=30.0 step=0.1>
+          <div class="input-group-append">
+            <span class="input-group-text">GHz</span>
+          </div>
+        </div>
+        <div class="input-group mb-3 justify-content-center">
+          <label>Wavelength :</label>
+          <label id="wavelength" class="mx-2"></label>
+          <label>mm</label>
+        </div>
+        <div class="input-group mb-3 justify-content-center">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Diameter</span>
+          </div>
+          <input id="diameter" class="px-1" style="width:80px;" type="number" value=300 min=100 max=5000 step=10>
+          <div class="input-group-append">
+            <span class="input-group-text">mm</span>
+          </div>
+        </div>
+        <div class="input-group mb-3 justify-content-center">
+          <label>&lambda;/D :</label>
+          <label id="ldd" class="mx-2"></label>
+        </div>
+        <div class="input-group mb-3 justify-content-center">
+          <label>D/&lambda; :</label>
+          <label id="ddl" class="mx-2"></label>
+        </div>
+
+        <div class="custom-file" style="width: 240px;">
+          <input type="file" class="custom-file-input" id="fileInput">
+          <label class="custom-file-label text-left" for="customFile">Pattern file...</label>
+        </div>
+        <div class="input-group mb-3 justify-content-center mt-1">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Normalize</span>
+          </div>
+          <input id="normalize" class="px-1" style="width:130px;" type="number">
+        </div>
+
+        <a href="patterns/sample_pattern.txt">Sample pattern file</a>
+
+      </div>
+      <div id="plot" class="col-lg-8 justify-content-center" style="height: 350px;"></div>
+    </div>
+  </div>
+
+
+
+
+
+
+  <script>
+    Plotly.newPlot($("#plot")[0],
+      [{
+        x: [1, 2, 3, 4, 5],
+        y: [1, 2, 4, 8, 16]
+      }],
+      {
+        margin: { t: 0 },
+        xaxis: {
+          title: {
+            text: "angle"
+          }
+        },
+        yaxis: {
+          title: {
+            text: "dB"
+          }
+        }
+      },
+      { responsive: true });
+
+    $(document).ready(function () {
+      $("#frequency").change(function () {
+        updatePlot()
+        updateWavelength()
+        updateWavelengthDiamterRatio()
+      })
+      $("#diameter").change(function () {
+        updatePlot()
+        updateWavelengthDiamterRatio()
+      })
+      $("#normalize").change(function () {
+        normalizePattern()
+      })
+
+      updatePlot()
+      updateWavelength()
+      updateWavelengthDiamterRatio()
+
+      document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+
+
+    });
+
+    function updatePlot() {
+      var diameter = $("#diameter").val()
+      var frequency = $("#frequency").val()
+      var wavelength = 3E8 / (frequency * 1E9) * 1000
+      var phi_min = Math.min(2, Math.max(1, 100 * (wavelength / diameter)))
+      var phi_max = 20
+      var Nphi = 11
+      var phis = math.range(phi_min, phi_max, (phi_max - phi_min) / Nphi, true)._data
+      var SLLs = phis.map(function (phi) {
+        return 29.0 - 25 * Math.log10(phi)
+      })
+      phis.push(26.5)
+      SLLs.push(-3.5)
+      // console.log(phis)
+      // console.log(SLLs)
+      // Plotly.deleteTraces($("#plot")[0], 0);
+      while ($("#plot")[0].data.length > 0) {
+        Plotly.deleteTraces($("#plot")[0], [0]);
+      }
+      phis = phis.slice().map(function (phi) { return -phi }).reverse().concat(phis)
+      SLLs = SLLs.slice().reverse().concat(SLLs)
+      Plotly.addTraces($("#plot")[0], { x: phis, y: SLLs })
+      // Plotly.addTraces($("#plot")[0], { x: phis.map(function (phi) { return -phi }), y: SLLs })
+    }
+
+    function updateWavelength() {
+      var frequency = $("#frequency").val()
+      $("#wavelength").text((3E8 / (frequency * 1E9) * 1000).toFixed(1))
+    }
+
+    function updateWavelengthDiamterRatio() {
+      var wavelength = Number($("#wavelength").text())
+      var diameter = $("#diameter").val()
+      $("#ldd").text((wavelength / diameter).toFixed(2))
+      $("#ddl").text((diameter / wavelength).toFixed(2))
+    }
+
+    function handleFileSelect(event) {
+      const reader = new FileReader()
+      reader.onload = handleFileLoad;
+      reader.readAsText(event.target.files[0])
+    }
+
+    var angles = []
+    var values = []
+    function handleFileLoad(event) {
+      console.log(event);
+      var lines = event.target.result.split("\n");
+      angles = []
+      values = []
+      for (var i = 0; i < lines.length; ++i) {
+        angles.push(Number(lines[i].match(/\S+/g)[0]))
+        values.push(Number(lines[i].match(/\S+/g)[1]))
+      }
+      // console.log(angles)
+      // console.log(values)
+      try {
+        Plotly.deleteTraces($("#plot")[0], [1]);
+      } catch (error) {
+
+      }
+      Plotly.addTraces($("#plot")[0], { x: angles, y: values })
+    }
+
+    var normalizedValues = []
+    function normalizePattern() {
+      var normalizeValue = $("#normalize").val()
+      Math.max(values)
+      for (var i = 0; i < values.length; ++i) {
+        normalizedValues[i] = values[i] - (Math.max(...values) - normalizeValue)
+      }
+      console.log(normalizedValues)
+      try {
+        Plotly.deleteTraces($("#plot")[0], [1]);
+      } catch (error) {
+
+      }
+      Plotly.addTraces($("#plot")[0], { x: angles, y: normalizedValues })
+    }
+  </script>
+
+</body>
+
+</html>
